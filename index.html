@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme Woulé - Backend API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        .status {
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .endpoint {
+            background: #f3f4f6;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        .get { background: #3b82f6; color: white; }
+        .post { background: #10b981; color: white; }
+        .patch { background: #f59e0b; color: white; }
+        .account {
+            background: #fef3c7;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 5px 0;
+            border-left: 4px solid #f59e0b;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗💨 Plateforme Woulé</h1>
+        <p class="subtitle">API Backend - Réseau d'ambassadeurs automobilistes</p>
+        
+        <div class="status">✅ API Backend opérationnelle</div>
+
+        <div class="section">
+            <h2>📌 Endpoints principaux</h2>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <a href="/api/health" target="_blank">/api/health</a> - Health check
+            </div>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                /api/auth/register - Inscription
+            </div>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                /api/auth/login - Connexion
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                /api/auth/me - Profil utilisateur
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                /api/campaigns - Liste des campagnes
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                /api/admin/stats - Statistiques (admin)
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                /api/matching/campaigns/:id/candidates - Matching intelligent (admin)
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔐 Comptes de test</h2>
+            <div class="account">
+                <strong>Admin:</strong> admin@woule.com / admin123
+            </div>
+            <div class="account">
+                <strong>Ambassadeur:</strong> ambassadeur@test.com / password123
+            </div>
+            <div class="account">
+                <strong>Annonceur:</strong> annonceur@test.com / password123
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📚 Documentation</h2>
+            <p>Consultez le fichier <strong>API_ENDPOINTS.md</strong> pour la documentation complète des endpoints.</p>
+        </div>
+
+        <div class="footer">
+            <p>🚀 Backend créé avec Express + SQLite + JWT</p>
+            <p>Made with ❤️ for the French West Indies & Guyana</p>
+        </div>
+    </div>
+</body>
+</html>
