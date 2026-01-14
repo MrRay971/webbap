@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Ambassadeur - Woulé</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    body {
+      background: #FFDB15;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      background: #131726;
+      color: white;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #FFDB15;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .welcome-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border-left: 4px solid #131726;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #131726;
+      margin: 0.5rem 0;
+    }
+
+    .stat-label {
+      color: #4b5563;
+      font-size: 0.9rem;
+    }
+
+    .campaigns-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .campaign-item {
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .campaign-item:hover {
+      border-color: #FFDB15;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .campaign-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .campaign-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #131726;
+      margin: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6b7280;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🚗 Woulé</div>
+    <div class="user-menu">
+      <span data-user-email></span>
+      <span class="badge badge-primary" data-user-role></span>
+      <button class="btn btn-sm btn-danger" data-logout>Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-section">
+      <h1 style="color: #131726; margin: 0;">
+        Bonjour, <span id="userName"></span> ! 👋
+      </h1>
+      <p style="color: #6b7280; margin-top: 0.5rem;">
+        Bienvenue sur votre tableau de bord ambassadeur
+      </p>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-label">Campagnes actives</div>
+        <div class="stat-value" id="activeCampaigns">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Kilomètres parcourus</div>
+        <div class="stat-value" id="totalKm">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Impressions générées</div>
+        <div class="stat-value" id="totalImpressions">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Gains totaux</div>
+        <div class="stat-value" id="totalEarnings">-</div>
+      </div>
+    </div>
+
+    <div class="campaigns-section">
+      <h2 style="color: #131726;">Mes campagnes</h2>
+      <div id="campaignsContainer">
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Chargement de vos campagnes...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    // Vérifier l'authentification
+    checkAuth('ambassador');
+
+    // Récupérer et afficher les données
+    async function loadDashboard() {
+      try {
+        const user = getCurrentUser();
+        
+        // Afficher le nom de l'utilisateur
+        if (user.profile) {
+          const name = user.profile.first_name 
+            ? `${user.profile.first_name} ${user.profile.last_name || ''}`
+            : user.profile.company_name || 'Ambassadeur';
+          document.getElementById('userName').textContent = name;
+        }
+
+        // Charger les statistiques
+        const statsResponse = await API.ambassadors.getMyStats();
+        if (statsResponse.success) {
+          const stats = statsResponse.data;
+          document.getElementById('activeCampaigns').textContent = stats.active_campaigns || 0;
+          document.getElementById('totalKm').textContent = (stats.total_km || 0).toLocaleString() + ' km';
+          document.getElementById('totalImpressions').textContent = (stats.total_impressions || 0).toLocaleString();
+          document.getElementById('totalEarnings').textContent = (stats.total_earnings || 0).toFixed(2) + ' €';
+        }
+
+        // Charger les campagnes
+        const campaignsResponse = await API.ambassadors.getMyCampaigns();
+        const campaignsContainer = document.getElementById('campaignsContainer');
+        
+        if (campaignsResponse.success && campaignsResponse.data.length > 0) {
+          campaignsContainer.innerHTML = '';
+          
+          campaignsResponse.data.forEach(campaign => {
+            const statusColors = {
+              'active': 'success',
+              'completed': 'info',
+              'paused': 'warning'
+            };
+            
+            const campaignHtml = `
+              <div class="campaign-item">
+                <div class="campaign-header">
+                  <h3 class="campaign-title">${campaign.name}</h3>
+                  <span class="badge badge-${statusColors[campaign.assignment_status] || 'info'}">
+                    ${campaign.assignment_status}
+                  </span>
+                </div>
+                <p style="color: #6b7280; margin-bottom: 1rem;">
+                  ${campaign.advertiser_name}
+                </p>
+                <div class="grid grid-3" style="gap: 1rem;">
+                  <div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Km parcourus</div>
+                    <div style="font-weight: 700;">${campaign.km_driven || 0} km</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Impressions</div>
+                    <div style="font-weight: 700;">${(campaign.impressions_generated || 0).toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Gains</div>
+                    <div style="font-weight: 700; color: #10b981;">${(campaign.earnings || 0).toFixed(2)} €</div>
+                  </div>
+                </div>
+              </div>
+            `;
+            
+            campaignsContainer.innerHTML += campaignHtml;
+          });
+        } else {
+          campaignsContainer.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <h3>Aucune campagne active</h3>
+              <p>Vous n'êtes affecté à aucune campagne pour le moment.</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Erreur chargement dashboard:', error);
+        document.getElementById('campaignsContainer').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <h3>Erreur de chargement</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Charger les données au chargement de la page
+    loadDashboard();
+  </script>
+</body>
+</html>

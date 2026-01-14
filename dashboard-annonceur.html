@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Annonceur - Woulé</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    body {
+      background: #131726;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+
+    .header {
+      background: #181D30;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #FFDB15;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .welcome-section {
+      background: #181D30;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 2px solid #FFDB15;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #181D30;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border-left: 4px solid #FFDB15;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #FFDB15;
+      margin: 0.5rem 0;
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+    }
+
+    .campaigns-section {
+      background: #181D30;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .campaign-item {
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .campaign-item:hover {
+      border-color: #FFDB15;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🚗 Woulé</div>
+    <div class="user-menu">
+      <span data-user-email style="color: rgba(255, 255, 255, 0.9);"></span>
+      <span class="badge badge-primary" data-user-role></span>
+      <button class="btn btn-sm btn-danger" data-logout>Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-section">
+      <h1 style="color: #FFDB15; margin: 0;">
+        Bonjour, <span id="companyName"></span> ! 👔
+      </h1>
+      <p style="color: rgba(255, 255, 255, 0.8); margin-top: 0.5rem;">
+        Bienvenue sur votre tableau de bord annonceur
+      </p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Campagnes actives</div>
+        <div class="stat-value" id="activeCampaigns">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Budget total</div>
+        <div class="stat-value" id="totalBudget">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Impressions totales</div>
+        <div class="stat-value" id="totalImpressions">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Dépenses totales</div>
+        <div class="stat-value" id="totalSpent">-</div>
+      </div>
+    </div>
+
+    <div class="campaigns-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="color: white; margin: 0;">Mes campagnes</h2>
+        <button class="btn btn-primary" onclick="alert('Fonction création de campagne - À développer')">
+          ➕ Créer une campagne
+        </button>
+      </div>
+      <div id="campaignsContainer">
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Chargement de vos campagnes...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    checkAuth('advertiser');
+
+    async function loadDashboard() {
+      try {
+        const user = getCurrentUser();
+        
+        if (user.profile) {
+          document.getElementById('companyName').textContent = user.profile.company_name || 'Annonceur';
+        }
+
+        // Charger les statistiques
+        const statsResponse = await API.advertisers.getMyStats();
+        if (statsResponse.success) {
+          const stats = statsResponse.data;
+          document.getElementById('activeCampaigns').textContent = stats.active_campaigns || 0;
+          document.getElementById('totalBudget').textContent = (stats.total_budget || 0).toLocaleString() + ' €';
+          document.getElementById('totalImpressions').textContent = (stats.total_impressions || 0).toLocaleString();
+          document.getElementById('totalSpent').textContent = (stats.total_spent || 0).toLocaleString() + ' €';
+        }
+
+        // Charger les campagnes
+        const campaignsResponse = await API.campaigns.getAll();
+        const campaignsContainer = document.getElementById('campaignsContainer');
+        
+        if (campaignsResponse.success && campaignsResponse.data.length > 0) {
+          campaignsContainer.innerHTML = '';
+          
+          campaignsResponse.data.forEach(campaign => {
+            const statusColors = {
+              'active': 'success',
+              'scheduled': 'info',
+              'completed': 'secondary',
+              'draft': 'warning',
+              'pending': 'warning'
+            };
+            
+            campaignsContainer.innerHTML += `
+              <div class="campaign-item">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <h3 style="color: white; margin: 0;">${campaign.name}</h3>
+                  <span class="badge badge-${statusColors[campaign.status] || 'info'}">
+                    ${campaign.status}
+                  </span>
+                </div>
+                <div class="grid grid-3" style="gap: 1rem;">
+                  <div>
+                    <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6);">Budget</div>
+                    <div style="font-weight: 700; color: #FFDB15;">${(campaign.budget || 0).toLocaleString()} €</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6);">Impressions</div>
+                    <div style="font-weight: 700; color: white;">${(campaign.impressions || 0).toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6);">Objectif amb.</div>
+                    <div style="font-weight: 700; color: white;">${campaign.target_ambassadors || 0}</div>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          campaignsContainer.innerHTML = `
+            <div class="empty-state">
+              <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+              <h3>Aucune campagne</h3>
+              <p>Vous n'avez pas encore créé de campagne.</p>
+              <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Créer une campagne')">
+                Créer ma première campagne
+              </button>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        document.getElementById('campaignsContainer').innerHTML = `
+          <div class="empty-state">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+            <h3>Erreur de chargement</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

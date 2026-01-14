@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - Woulé</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #131726 0%, #8b5cf6 100%);
+      padding: 2rem;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 1rem;
+      padding: 3rem;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo h1 {
+      color: #FFDB15;
+      font-size: 2.5rem;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo p {
+      color: #4b5563;
+      margin-top: 0.5rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 4px solid #ef4444;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      color: #065f46;
+      border-left: 4px solid #10b981;
+    }
+
+    .form-footer {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .spinner-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spinner-overlay.active {
+      display: flex;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="spinner-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="login-container">
+    <div class="logo">
+      <h1>🚗 Woulé</h1>
+      <p>Connectez-vous à votre compte</p>
+    </div>
+
+    <div id="alertBox" class="alert"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          class="form-input" 
+          placeholder="votre@email.com"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Mot de passe</label>
+        <input 
+          type="password" 
+          id="password" 
+          class="form-input" 
+          placeholder="••••••••"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn-purple" style="width: 100%;">
+        Se connecter
+      </button>
+    </form>
+
+    <div class="form-footer">
+      <p style="margin-bottom: 1rem;">
+        <a href="#" style="color: #8b5cf6;">Mot de passe oublié ?</a>
+      </p>
+      <p>
+        Pas encore de compte ?<br>
+        <a href="/inscription-ambassadeur.html" style="color: #FFDB15; font-weight: 600;">
+          S'inscrire comme Ambassadeur
+        </a>
+        •
+        <a href="/inscription-annonceur.html" style="color: #8b5cf6; font-weight: 600;">
+          S'inscrire comme Annonceur
+        </a>
+      </p>
+      <p style="margin-top: 1.5rem;">
+        <a href="/" style="color: #4b5563;">← Retour à l'accueil</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const alertBox = document.getElementById('alertBox');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    // Afficher une alerte
+    function showAlert(message, type = 'error') {
+      alertBox.textContent = message;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = 'block';
+      
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 5000);
+    }
+
+    // Gestion de la soumission du formulaire
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Afficher le loader
+      loadingOverlay.classList.add('active');
+
+      try {
+        const response = await API.auth.login(email, password);
+
+        if (response.success) {
+          // Sauvegarder le token et les infos utilisateur
+          localStorage.setItem('woule_token', response.data.token);
+          localStorage.setItem('woule_user', JSON.stringify(response.data.user));
+
+          showAlert('Connexion réussie ! Redirection...', 'success');
+
+          // Rediriger selon le rôle
+          setTimeout(() => {
+            const role = response.data.user.role;
+            const redirects = {
+              'ambassador': '/dashboard-ambassadeur.html',
+              'advertiser': '/dashboard-annonceur.html',
+              'admin': '/admin-dashboard.html'
+            };
+
+            window.location.href = redirects[role] || '/';
+          }, 1000);
+        }
+      } catch (error) {
+        loadingOverlay.classList.remove('active');
+        showAlert(error.message || 'Erreur de connexion. Vérifiez vos identifiants.', 'error');
+      }
+    });
+
+    // Comptes de test affichés dans la console
+    console.log('🔐 Comptes de test disponibles:');
+    console.log('Ambassadeur: ambassadeur@test.com / password123');
+    console.log('Annonceur: annonceur@test.com / password123');
+    console.log('Admin: admin@woule.com / admin123');
+  </script>
+</body>
+</html>

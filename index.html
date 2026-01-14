@@ -1,161 +1,160 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plateforme Woulé - Backend API</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.2em;
-        }
-        .status {
-            background: #10b981;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: inline-block;
-            font-weight: bold;
-        }
-        .section {
-            margin: 20px 0;
-        }
-        .section h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-        .endpoint {
-            background: #f3f4f6;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin: 8px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-        }
-        .method {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            margin-right: 10px;
-            font-weight: bold;
-            font-size: 0.8em;
-        }
-        .get { background: #3b82f6; color: white; }
-        .post { background: #10b981; color: white; }
-        .patch { background: #f59e0b; color: white; }
-        .account {
-            background: #fef3c7;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin: 5px 0;
-            border-left: 4px solid #f59e0b;
-        }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-        }
-        a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Woulé - Premier réseau d'ambassadeurs automobilistes des Antilles et de la Guyane</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #131726 0%, #181D30 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .hero-content {
+      max-width: 800px;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #FFDB15;
+    }
+
+    .hero-subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 3rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .choice-buttons {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .choice-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 280px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 3px solid transparent;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .choice-card.ambassador {
+      border-color: #FFDB15;
+    }
+
+    .choice-card.advertiser {
+      border-color: #8b5cf6;
+    }
+
+    .choice-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .choice-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #131726;
+    }
+
+    .choice-description {
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+    }
+
+    footer {
+      background: #131726;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.2rem;
+      }
+
+      .choice-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚗💨 Plateforme Woulé</h1>
-        <p class="subtitle">API Backend - Réseau d'ambassadeurs automobilistes</p>
-        
-        <div class="status">✅ API Backend opérationnelle</div>
+  <div class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">🚗 Bienvenue sur Woulé</h1>
+      <p class="hero-subtitle">
+        Premier réseau d'ambassadeurs automobilistes<br>
+        des Antilles et de la Guyane
+      </p>
 
-        <div class="section">
-            <h2>📌 Endpoints principaux</h2>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                <a href="/api/health" target="_blank">/api/health</a> - Health check
-            </div>
-            <div class="endpoint">
-                <span class="method post">POST</span>
-                /api/auth/register - Inscription
-            </div>
-            <div class="endpoint">
-                <span class="method post">POST</span>
-                /api/auth/login - Connexion
-            </div>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                /api/auth/me - Profil utilisateur
-            </div>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                /api/campaigns - Liste des campagnes
-            </div>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                /api/admin/stats - Statistiques (admin)
-            </div>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                /api/matching/campaigns/:id/candidates - Matching intelligent (admin)
-            </div>
+      <div class="choice-buttons">
+        <div class="choice-card ambassador" onclick="window.location.href='/login.html?type=ambassador'">
+          <div class="choice-icon">🚗</div>
+          <h3 class="choice-title">Je suis Ambassadeur</h3>
+          <p class="choice-description">
+            Gagnez des récompenses en affichant des publicités sur votre véhicule
+          </p>
+          <button class="btn btn-primary">Commencer</button>
         </div>
 
-        <div class="section">
-            <h2>🔐 Comptes de test</h2>
-            <div class="account">
-                <strong>Admin:</strong> admin@woule.com / admin123
-            </div>
-            <div class="account">
-                <strong>Ambassadeur:</strong> ambassadeur@test.com / password123
-            </div>
-            <div class="account">
-                <strong>Annonceur:</strong> annonceur@test.com / password123
-            </div>
+        <div class="choice-card advertiser" onclick="window.location.href='/login.html?type=advertiser'">
+          <div class="choice-icon">👔</div>
+          <h3 class="choice-title">Je suis Annonceur</h3>
+          <p class="choice-description">
+            Lancez des campagnes publicitaires sur les véhicules des particuliers
+          </p>
+          <button class="btn btn-purple">Commencer</button>
         </div>
+      </div>
 
-        <div class="section">
-            <h2>📚 Documentation</h2>
-            <p>Consultez le fichier <strong>API_ENDPOINTS.md</strong> pour la documentation complète des endpoints.</p>
-        </div>
-
-        <div class="footer">
-            <p>🚀 Backend créé avec Express + SQLite + JWT</p>
-            <p>Made with ❤️ for the French West Indies & Guyana</p>
-        </div>
+      <div style="margin-top: 3rem;">
+        <p>
+          Déjà inscrit ? 
+          <a href="/login.html" style="color: #FFDB15; font-weight: 600;">
+            Connectez-vous ici
+          </a>
+        </p>
+      </div>
     </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Woulé - Tous droits réservés</p>
+    <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.7;">
+      Martinique • Guadeloupe • Guyane
+    </p>
+  </footer>
 </body>
 </html>

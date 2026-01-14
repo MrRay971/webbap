@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - Woulé</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    body {
+      background: #1a1d29;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+
+    .header {
+      background: #252a3a;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #8b5cf6;
+    }
+
+    .main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .welcome-section {
+      background: #252a3a;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 2px solid #8b5cf6;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #252a3a;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border-left: 4px solid #8b5cf6;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #8b5cf6;
+      margin: 0.5rem 0;
+    }
+
+    .section {
+      background: #252a3a;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .matching-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .matching-table th {
+      background: #1a1d29;
+      padding: 1rem;
+      text-align: left;
+      color: #8b5cf6;
+      font-weight: 700;
+    }
+
+    .matching-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .matching-table tr:hover {
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .score-bar {
+      background: rgba(255, 255, 255, 0.1);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+      transition: width 0.3s ease;
+    }
+
+    .btn-action {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .matching-table {
+        font-size: 0.875rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">👨‍💼 Woulé Admin</div>
+    <div class="user-menu">
+      <span data-user-email style="color: rgba(255, 255, 255, 0.9);"></span>
+      <span class="badge badge-purple" data-user-role></span>
+      <button class="btn btn-sm btn-danger" data-logout>Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-section">
+      <h1 style="color: #8b5cf6; margin: 0;">Dashboard Administrateur 👨‍💼</h1>
+      <p style="color: rgba(255, 255, 255, 0.8); margin-top: 0.5rem;">
+        Gestion complète de la plateforme Woulé
+      </p>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-label" style="color: rgba(255, 255, 255, 0.7);">Ambassadeurs</div>
+        <div class="stat-value" id="totalAmbassadors">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" style="color: rgba(255, 255, 255, 0.7);">Annonceurs</div>
+        <div class="stat-value" id="totalAdvertisers">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" style="color: rgba(255, 255, 255, 0.7);">Campagnes</div>
+        <div class="stat-value" id="totalCampaigns">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" style="color: rgba(255, 255, 255, 0.7);">Impressions</div>
+        <div class="stat-value" id="totalImpressions">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" style="color: rgba(255, 255, 255, 0.7);">CA Total</div>
+        <div class="stat-value" id="totalRevenue">-</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 style="color: white;">🎯 Module de Matching Intelligent</h2>
+      <p style="color: rgba(255, 255, 255, 0.7);">
+        Sélectionnez une campagne pour voir les candidats classés par score de compatibilité
+      </p>
+      
+      <div style="margin: 1.5rem 0;">
+        <label style="display: block; margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.9);">
+          Campagne :
+        </label>
+        <select id="campaignSelect" class="form-select" style="max-width: 400px;">
+          <option value="">Chargement...</option>
+        </select>
+      </div>
+
+      <div id="matchingResults"></div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    checkAuth('admin');
+
+    async function loadDashboard() {
+      try {
+        // Charger les statistiques globales
+        const statsResponse = await API.admin.getStats();
+        if (statsResponse.success) {
+          const stats = statsResponse.data;
+          
+          // Compter les ambassadeurs
+          const ambassadorCount = stats.ambassadors?.total || 0;
+          document.getElementById('totalAmbassadors').textContent = ambassadorCount;
+          
+          // Compter les annonceurs
+          const advertiserCount = stats.advertisers?.total || 0;
+          document.getElementById('totalAdvertisers').textContent = advertiserCount;
+          
+          // Compter les campagnes
+          const campaignCount = stats.campaigns?.reduce((sum, c) => sum + c.count, 0) || 0;
+          document.getElementById('totalCampaigns').textContent = campaignCount;
+          
+          // Impressions
+          document.getElementById('totalImpressions').textContent = 
+            (stats.total_impressions || 0).toLocaleString();
+          
+          // CA
+          document.getElementById('totalRevenue').textContent = 
+            (stats.total_revenue || 0).toLocaleString() + ' €';
+        }
+
+        // Charger les campagnes pour le sélecteur
+        const campaignsResponse = await API.campaigns.getAll();
+        const campaignSelect = document.getElementById('campaignSelect');
+        
+        if (campaignsResponse.success) {
+          campaignSelect.innerHTML = '<option value="">-- Sélectionnez une campagne --</option>';
+          
+          campaignsResponse.data.forEach(campaign => {
+            const option = document.createElement('option');
+            option.value = campaign.id;
+            option.textContent = `${campaign.name} (${campaign.status})`;
+            campaignSelect.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Erreur chargement dashboard:', error);
+      }
+    }
+
+    // Charger les candidats avec matching
+    document.getElementById('campaignSelect').addEventListener('change', async (e) => {
+      const campaignId = e.target.value;
+      const resultsDiv = document.getElementById('matchingResults');
+      
+      if (!campaignId) {
+        resultsDiv.innerHTML = '';
+        return;
+      }
+
+      resultsDiv.innerHTML = '<div class="spinner"></div>';
+
+      try {
+        const response = await API.matching.getCandidates(campaignId);
+        
+        if (response.success && response.data.candidates.length > 0) {
+          const campaign = response.data.campaign;
+          const candidates = response.data.candidates;
+
+          let html = `
+            <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 0.5rem;">
+              <h3 style="color: #8b5cf6; margin: 0 0 0.5rem 0;">${campaign.name}</h3>
+              <p style="color: rgba(255, 255, 255, 0.8); margin: 0;">
+                ${candidates.length} candidat(s) • Objectif: ${campaign.target_ambassadors} ambassadeurs
+              </p>
+            </div>
+
+            <table class="matching-table">
+              <thead>
+                <tr>
+                  <th>Ambassadeur</th>
+                  <th>Type</th>
+                  <th>Véhicule</th>
+                  <th>Score</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          candidates.forEach(candidate => {
+            const name = candidate.type === 'company' 
+              ? candidate.company_name 
+              : `${candidate.first_name} ${candidate.last_name}`;
+            
+            const score = candidate.matching_score;
+            const scoreColor = score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : '#ef4444';
+
+            html += `
+              <tr>
+                <td>
+                  <div style="font-weight: 700;">${name}</div>
+                  <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6);">${candidate.email}</div>
+                </td>
+                <td>
+                  <span class="badge badge-${candidate.type === 'company' ? 'warning' : 'info'}">
+                    ${candidate.type === 'company' ? 'Entreprise' : 'Particulier'}
+                  </span>
+                </td>
+                <td>
+                  <div>${candidate.vehicle_brand} ${candidate.vehicle_model}</div>
+                  <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6);">
+                    ${candidate.vehicle_type}
+                  </div>
+                </td>
+                <td>
+                  <div style="font-weight: 700; font-size: 1.25rem; color: ${scoreColor};">
+                    ${score}/100
+                  </div>
+                  <div class="score-bar">
+                    <div class="score-fill" style="width: ${score}%; background: ${scoreColor};"></div>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-success btn-action" 
+                          onclick="affectAmbassador(${campaignId}, ${candidate.ambassador_id})">
+                    ✅ Affecter
+                  </button>
+                  <button class="btn btn-sm btn-outline btn-action" 
+                          onclick="viewDetails(${candidate.ambassador_id})">
+                    👁️ Détails
+                  </button>
+                </td>
+              </tr>
+            `;
+          });
+
+          html += '</tbody></table>';
+          resultsDiv.innerHTML = html;
+        } else {
+          resultsDiv.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: rgba(255, 255, 255, 0.7);">
+              <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+              <h3>Aucun candidat</h3>
+              <p>Aucun ambassadeur n'a postulé à cette campagne.</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Erreur matching:', error);
+        resultsDiv.innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: #ef4444;">
+            <h3>Erreur</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    });
+
+    // Affecter un ambassadeur
+    async function affectAmbassador(campaignId, ambassadorId) {
+      if (!confirm('Voulez-vous affecter cet ambassadeur à la campagne ?')) return;
+
+      try {
+        await API.campaigns.assignAmbassador(campaignId, ambassadorId);
+        alert('✅ Ambassadeur affecté avec succès !');
+        
+        // Recharger les candidats
+        document.getElementById('campaignSelect').dispatchEvent(new Event('change'));
+      } catch (error) {
+        alert('❌ Erreur: ' + error.message);
+      }
+    }
+
+    function viewDetails(ambassadorId) {
+      alert(`Détails de l'ambassadeur #${ambassadorId}\n(Fonctionnalité à développer)`);
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
